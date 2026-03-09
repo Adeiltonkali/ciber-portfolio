@@ -1,516 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Adeilton Jr // Red Team Operator</title>
+<title>Junior.xd // Cyberpunk Security Dashboard</title>
 
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
 
 <style>
 
-html{
-scroll-behavior:smooth;
-}
-
 body{
-
+margin:0;
 background:#050505;
 color:#eaeaea;
-
-font-family:"JetBrains Mono",monospace;
-
-margin:0;
+font-family:"JetBrains Mono";
 overflow-x:hidden;
-
 }
 
-/* HUD GRID */
-
-body::before{
-
-content:"";
+canvas{
 position:fixed;
-inset:0;
-
-background:
-linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-
-background-size:80px 80px;
-
-z-index:-2;
-
-}
-
-/* scan lines */
-
-body::after{
-
-content:"";
-position:fixed;
-inset:0;
-
-background:repeating-linear-gradient(
-0deg,
-rgba(255,255,255,.03),
-rgba(255,255,255,.03) 2px,
-transparent 2px,
-transparent 4px
-);
-
-pointer-events:none;
-
+top:0;
+left:0;
 z-index:-1;
+}
+
+/* INTRO SCREEN */
+
+#intro{
+
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+
+background:black;
+
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+
+z-index:9999;
+
+transition:opacity 1.2s ease;
 
 }
 
-/* titles */
-
-h1,h2,h3{
+.intro-title{
 
 font-family:"Orbitron";
+font-size:46px;
+
+color:#ff00ff;
+
+text-shadow:
+0 0 15px #ff00ff,
+0 0 30px #ff00ff,
+0 0 60px #ff00ff;
+
+animation:pulse 2s infinite;
+
+}
+
+.intro-sub{
+
+margin-top:20px;
+
+color:#00ffff;
+
 letter-spacing:2px;
-color:white;
+
+}
+
+@keyframes pulse{
+
+0%{text-shadow:0 0 15px #ff00ff;}
+50%{text-shadow:0 0 40px #ff00ff;}
+100%{text-shadow:0 0 15px #ff00ff;}
 
 }
 
 /* HERO */
 
 .hero{
-
 text-align:center;
-padding:140px 10%;
-border-bottom:1px solid rgba(255,255,255,.08);
-
+padding:120px 10%;
 }
 
-/* glitch */
-
-.glitch{
-
-position:relative;
-font-size:42px;
-
+.hero h1{
+font-family:"Orbitron";
+font-size:48px;
+color:#ff00ff;
+text-shadow:0 0 15px #ff00ff;
 }
 
-.glitch::before,
-.glitch::after{
-
-content:attr(data-text);
-position:absolute;
-left:0;
-top:0;
-width:100%;
-
+.hero p{
+color:#00ffff;
+letter-spacing:2px;
 }
 
-.glitch::before{
-
-color:#00ffe1;
-transform:translate(-2px,0);
-opacity:.7;
-animation:glitch1 1.5s infinite;
-
-}
-
-.glitch::after{
-
-color:#ffffff;
-transform:translate(2px,0);
-opacity:.5;
-animation:glitch2 1.5s infinite;
-
-}
-
-@keyframes glitch1{
-
-0%{transform:translate(0)}
-20%{transform:translate(-3px,2px)}
-40%{transform:translate(-1px,-2px)}
-60%{transform:translate(2px,1px)}
-80%{transform:translate(-2px,0)}
-100%{transform:translate(0)}
-
-}
-
-@keyframes glitch2{
-
-0%{transform:translate(0)}
-20%{transform:translate(2px,-2px)}
-40%{transform:translate(1px,3px)}
-60%{transform:translate(-2px,-1px)}
-80%{transform:translate(3px,0)}
-100%{transform:translate(0)}
-
-}
-
-/* buttons */
-
-.buttons{
-
-margin-top:25px;
-
-}
-
-.buttons a{
-
-display:inline-block;
-
-margin:10px;
-
-padding:12px 26px;
-
-border:1px solid rgba(255,255,255,.2);
-
-color:white;
-
-text-decoration:none;
-
-transition:.35s;
-
-position:relative;
-
-overflow:hidden;
-
-}
-
-.buttons a::before{
-
-content:"";
-
-position:absolute;
-inset:0;
-
-background:linear-gradient(
-120deg,
-transparent,
-rgba(0,255,200,.5),
-transparent
-);
-
-opacity:0;
-
-}
-
-.buttons a:hover{
-
-border-color:#00ffe1;
-color:#00ffe1;
-
-}
-
-.buttons a:hover::before{
-
-opacity:1;
-animation:scan 1.3s linear infinite;
-
-}
-
-@keyframes scan{
-
-0%{transform:translateX(-100%)}
-100%{transform:translateX(100%)}
-
-}
-
-/* sections */
+/* GRID */
 
 section{
-
 padding:90px 10%;
-
 }
 
-/* stack */
-
-.stack-grid{
-
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:30px;
-
-}
-
-.stack-box{
-
-background:rgba(255,255,255,.02);
-
-border:1px solid rgba(255,255,255,.08);
-
-padding:30px;
-
-backdrop-filter:blur(5px);
-
-transition:.35s;
-
-}
-
-.stack-box:hover{
-
-transform:translateY(-6px) scale(1.02);
-
-border-color:#00ffe1;
-
-box-shadow:
-0 0 20px rgba(0,255,200,.25),
-0 0 40px rgba(0,255,200,.08);
-
-}
-
-/* projects */
-
-.projects{
-
+.grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 gap:30px;
-
 }
 
-.project-card{
+/* CARDS */
 
-background:rgba(255,255,255,.02);
+.card{
 
-border:1px solid rgba(255,255,255,.08);
+background:rgba(0,0,0,.6);
+border:1px solid #00ffff;
 
 padding:30px;
-
-position:relative;
-
-transition:.35s;
 
 backdrop-filter:blur(5px);
 
-}
-
-.project-card::before{
-
-content:"OPERATION";
-
-position:absolute;
-
-top:-10px;
-left:20px;
-
-font-size:10px;
-
-background:#050505;
-
-padding:4px 7px;
-
-color:#00ffe1;
+transition:.35s;
 
 }
 
-.project-card:hover{
+.card:hover{
 
 transform:translateY(-6px);
 
-border-color:#00ffe1;
-
 box-shadow:
-0 0 20px rgba(0,255,200,.25),
-0 0 50px rgba(0,255,200,.08);
+0 0 20px #00ffff,
+0 0 40px #00ffff;
 
 }
 
-/* terminal */
+/* TITLES */
+
+h2{
+font-family:"Orbitron";
+color:#00ffff;
+margin-bottom:30px;
+}
+
+/* TERMINAL */
 
 .terminal{
-
-background:#020202;
-
-border:1px solid rgba(255,255,255,.1);
-
-padding:35px;
-
-font-size:14px;
-
-line-height:1.6;
-
-box-shadow:
-0 0 30px rgba(0,0,0,.8),
-inset 0 0 40px rgba(0,255,200,.03);
-
+background:black;
+border:1px solid #ff00ff;
+padding:30px;
+box-shadow:0 0 20px #ff00ff inset;
 }
 
 .cursor{
-
 animation:blink 1s infinite;
-
 }
 
 @keyframes blink{
-
 0%{opacity:1}
 50%{opacity:0}
 100%{opacity:1}
-
 }
-
-/* footer */
 
 footer{
-
 text-align:center;
-padding:30px;
-
-border-top:1px solid rgba(255,255,255,.1);
-
-margin-top:60px;
-
-font-size:14px;
-
-}
-
-/* planet */
-
-#planet-container{
-
-position:fixed;
-
-top:0;
-left:0;
-
-width:100%;
-height:100%;
-
-background:black;
-
-display:none;
-
-z-index:9000;
-
-}
-
-#closePlanet{
-
-position:absolute;
-
-top:20px;
-right:20px;
-
-padding:10px 18px;
-
-border:1px solid #00ffe1;
-
-background:none;
-
-color:#00ffe1;
-
-cursor:pointer;
-
-font-family:"Orbitron";
-
+padding:40px;
+color:#888;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<header class="hero">
+<div id="intro">
 
-<h1 class="glitch" data-text="JUNIOR.xd // RED TEAM OPERATOR">
-JUNIOR.xd // RED TEAM OPERATOR
-</h1>
+<h1 class="intro-title">Project by Junior</h1>
 
-<p>
-Offensive Security enthusiast focused on vulnerability discovery and exploitation.
-</p>
-
-<div class="buttons">
-
-<a href="#projects">Projects</a>
-<a href="#" id="planetBtn">Planet</a>
-<a href="#contact">Contact</a>
+<p class="intro-sub">Initializing Cyber Security Dashboard...</p>
 
 </div>
+
+<canvas id="bg"></canvas>
+
+<header class="hero">
+
+<h1>JUNIOR.xd</h1>
+
+<p>CYBERPUNK RED TEAM SECURITY DASHBOARD</p>
 
 </header>
 
 <section>
 
-<h2>TECH STACK</h2>
+<h2>PROFILE</h2>
 
-<div class="stack-grid">
+<div class="grid">
 
-<div class="stack-box">
-<h3>Network</h3>
-<ul>
-<li>Nmap</li>
-<li>Wireshark</li>
-<li>Masscan</li>
-<li>Netcat</li>
-</ul>
+<div class="card">
+
+Offensive Security enthusiast focused on vulnerability discovery and exploitation.
+
+Current Focus:
+
+• CompTIA Security+  
+• Python security tools  
+• Red Team fundamentals  
+
 </div>
 
-<div class="stack-box">
-<h3>Web Security</h3>
-<ul>
-<li>Burp Suite</li>
-<li>SQLmap</li>
-<li>Gobuster</li>
-<li>OWASP ZAP</li>
-</ul>
-</div>
+<div class="card">
 
-<div class="stack-box">
-<h3>Recon</h3>
-<ul>
-<li>Amass</li>
-<li>Subfinder</li>
-<li>theHarvester</li>
-<li>Recon-ng</li>
-</ul>
-</div>
+STATUS: ACTIVE  
+ROLE: Security Student  
+LOCATION: Brazil  
 
-<div class="stack-box">
-<h3>Scripting</h3>
-<ul>
-<li>Python</li>
-<li>Bash</li>
-<li>Linux</li>
-<li>Git</li>
-</ul>
+Learning offensive security, networking and Python automation.
+
 </div>
 
 </div>
 
 </section>
 
-<section id="projects">
+<section>
+
+<h2>TECH STACK</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>Programming</h3>
+
+Python  
+Bash  
+Linux  
+Git
+
+</div>
+
+<div class="card">
+<h3>Network Tools</h3>
+
+Nmap  
+Wireshark  
+Masscan  
+Netcat
+
+</div>
+
+<div class="card">
+<h3>Web Security</h3>
+
+Burp Suite  
+SQLmap  
+Gobuster  
+OWASP ZAP
+
+</div>
+
+<div class="card">
+<h3>Recon Tools</h3>
+
+Amass  
+Subfinder  
+theHarvester  
+Recon-ng
+
+</div>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>SECURITY SKILLS</h2>
+
+<div class="grid">
+
+<div class="card">
+
+Reconnaissance
+
+• OSINT  
+• Subdomain enumeration  
+• Attack surface discovery  
+
+</div>
+
+<div class="card">
+
+Network Security
+
+• Port scanning  
+• Service enumeration  
+• Packet analysis  
+
+</div>
+
+<div class="card">
+
+Web Security
+
+• SQL Injection basics  
+• Directory brute force  
+• Authentication analysis  
+
+</div>
+
+</div>
+
+</section>
+
+<section>
 
 <h2>PROJECT OPERATIONS</h2>
 
-<div class="projects">
+<div class="grid">
 
-<div class="project-card">
-<h3>HTB - Lame</h3>
-<p>SMB Enumeration / Exploitation</p>
+<div class="card">
+
+Network Scanner
+
+Python security tool capable of:
+
+• Host discovery  
+• Port scanning  
+• Network mapping  
+
 </div>
 
-<div class="project-card">
-<h3>Network Scanner</h3>
-<p>Python host discovery + port scanner</p>
+<div class="card">
+
+Ping Sweep Tool
+
+Local network scanner for:
+
+• Active host detection  
+• ICMP automation  
+
 </div>
 
-<div class="project-card">
-<h3>Ping Sweep Tool</h3>
-<p>Local network active host discovery</p>
+<div class="card">
+
+Future Tools
+
+Upcoming projects:
+
+• Subdomain scanner  
+• Port enumeration tool  
+
 </div>
 
 </div>
 
 </section>
 
-<section id="contact">
+<section>
+
+<h2>LABS / WRITEUPS</h2>
+
+<div class="grid">
+
+<div class="card">
+
+HackTheBox
+
+Machines solved and studied for learning exploitation techniques.
+
+Example:
+
+HTB — Lame  
+• SMB enumeration  
+• Samba exploit  
+
+</div>
+
+<div class="card">
+
+TryHackMe
+
+Hands-on labs focused on:
+
+• Linux privilege escalation  
+• Network security  
+• Web exploitation  
+
+</div>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>CERTIFICATION PATH</h2>
+
+<div class="grid">
+
+<div class="card">
+
+CompTIA Security+  
+Status: Studying
+
+</div>
+
+<div class="card">
+
+eJPT  
+Status: Planned
+
+</div>
+
+<div class="card">
+
+OSCP  
+Long-term goal
+
+</div>
+
+</div>
+
+</section>
+
+<section>
 
 <h2>CONTACT TERMINAL</h2>
 
@@ -525,24 +444,40 @@ Offensive Security enthusiast focused on vulnerability discovery and exploitatio
 
 <footer>
 
-Cybersecurity Portfolio © 2026
+Cyberpunk Security Portfolio © 2026
 
 </footer>
 
-<div id="planet-container">
-<button id="closePlanet">Back</button>
-</div>
-
 <script>
+
+/* intro */
+
+window.addEventListener("load",()=>{
+
+setTimeout(()=>{
+
+const intro=document.getElementById("intro");
+
+intro.style.opacity="0";
+
+setTimeout(()=>{
+
+intro.style.display="none";
+
+},1200);
+
+},2500);
+
+});
 
 /* terminal typing */
 
-const text=`user@redteam:~$ connect junior
+const text=`user@cyberpunk:~$ connect junior
 
-Email: playeasy1234zs@gmail.com
 GitHub: github.com/Adeiltonkali
+Email: playeasy1234zs@gmail.com
 
-user@redteam:~$`;
+user@cyberpunk:~$`;
 
 let i=0;
 
@@ -562,101 +497,53 @@ setTimeout(type,30);
 
 type();
 
-/* background particles */
+/* particles */
+
+const canvas=document.getElementById("bg");
+
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
 
 for(let i=0;i<120;i++){
 
-let dot=document.createElement("div");
+particles.push({
 
-dot.style.position="fixed";
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+size:Math.random()*2,
+speed:Math.random()*0.4
 
-dot.style.width="2px";
-dot.style.height="2px";
-
-dot.style.background="white";
-
-dot.style.opacity=Math.random();
-
-dot.style.left=Math.random()*100+"%";
-dot.style.top=Math.random()*100+"%";
-
-document.body.appendChild(dot);
+})
 
 }
 
-/* planet */
-
-const planetBtn=document.getElementById("planetBtn");
-const container=document.getElementById("planet-container");
-const closePlanet=document.getElementById("closePlanet");
-
-planetBtn.onclick=(e)=>{
-
-e.preventDefault();
-
-container.style.display="block";
-
-initPlanet();
-
-};
-
-closePlanet.onclick=()=>{
-
-container.style.display="none";
-
-location.reload();
-
-};
-
-function initPlanet(){
-
-const scene=new THREE.Scene();
-
-const camera=new THREE.PerspectiveCamera(
-75,
-window.innerWidth/window.innerHeight,
-0.1,
-1000
-);
-
-const renderer=new THREE.WebGLRenderer({antialias:true});
-
-renderer.setSize(window.innerWidth,window.innerHeight);
-
-container.appendChild(renderer.domElement);
-
-const geometry=new THREE.SphereGeometry(3,64,64);
-
-const material=new THREE.MeshStandardMaterial({color:0x00ffe1});
-
-const planet=new THREE.Mesh(geometry,material);
-
-scene.add(planet);
-
-const light=new THREE.PointLight(0xffffff,1);
-
-light.position.set(5,5,5);
-
-scene.add(light);
-
-camera.position.z=7;
-
 function animate(){
 
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+particles.forEach(p=>{
+
+p.y+=p.speed;
+
+if(p.y>canvas.height)p.y=0;
+
+ctx.fillStyle="#00ffff";
+
+ctx.fillRect(p.x,p.y,p.size,p.size);
+
+})
+
 requestAnimationFrame(animate);
-
-planet.rotation.y+=0.003;
-
-renderer.render(scene,camera);
 
 }
 
 animate();
 
-}
-
 </script>
 
 </body>
-
 </html>
