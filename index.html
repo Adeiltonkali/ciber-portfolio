@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Adeilton Jr // Red Team Operator</title>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<style>
+
+html{
+scroll-behavior:smooth;
+}
+
+body{
+
+background:#050505;
+color:#eaeaea;
+
+font-family:"JetBrains Mono",monospace;
+
+margin:0;
+overflow-x:hidden;
+
+}
+
+/* HUD GRID */
+
+body::before{
+
+content:"";
+position:fixed;
+inset:0;
+
+background:
+linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+
+background-size:80px 80px;
+
+z-index:-2;
+
+}
+
+/* scan lines */
+
+body::after{
+
+content:"";
+position:fixed;
+inset:0;
+
+background:repeating-linear-gradient(
+0deg,
+rgba(255,255,255,.03),
+rgba(255,255,255,.03) 2px,
+transparent 2px,
+transparent 4px
+);
+
+pointer-events:none;
+
+z-index:-1;
+
+}
+
+/* titles */
+
+h1,h2,h3{
+
+font-family:"Orbitron";
+letter-spacing:2px;
+color:white;
+
+}
+
+/* HERO */
+
+.hero{
+
+text-align:center;
+padding:140px 10%;
+border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+/* glitch */
+
+.glitch{
+
+position:relative;
+font-size:42px;
+
+}
+
+.glitch::before,
+.glitch::after{
+
+content:attr(data-text);
+position:absolute;
+left:0;
+top:0;
+width:100%;
+
+}
+
+.glitch::before{
+
+color:#00ffe1;
+transform:translate(-2px,0);
+opacity:.7;
+animation:glitch1 1.5s infinite;
+
+}
+
+.glitch::after{
+
+color:#ffffff;
+transform:translate(2px,0);
+opacity:.5;
+animation:glitch2 1.5s infinite;
+
+}
+
+@keyframes glitch1{
+
+0%{transform:translate(0)}
+20%{transform:translate(-3px,2px)}
+40%{transform:translate(-1px,-2px)}
+60%{transform:translate(2px,1px)}
+80%{transform:translate(-2px,0)}
+100%{transform:translate(0)}
+
+}
+
+@keyframes glitch2{
+
+0%{transform:translate(0)}
+20%{transform:translate(2px,-2px)}
+40%{transform:translate(1px,3px)}
+60%{transform:translate(-2px,-1px)}
+80%{transform:translate(3px,0)}
+100%{transform:translate(0)}
+
+}
+
+/* buttons */
+
+.buttons{
+
+margin-top:25px;
+
+}
+
+.buttons a{
+
+display:inline-block;
+
+margin:10px;
+
+padding:12px 26px;
+
+border:1px solid rgba(255,255,255,.2);
+
+color:white;
+
+text-decoration:none;
+
+transition:.35s;
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.buttons a::before{
+
+content:"";
+
+position:absolute;
+inset:0;
+
+background:linear-gradient(
+120deg,
+transparent,
+rgba(0,255,200,.5),
+transparent
+);
+
+opacity:0;
+
+}
+
+.buttons a:hover{
+
+border-color:#00ffe1;
+color:#00ffe1;
+
+}
+
+.buttons a:hover::before{
+
+opacity:1;
+animation:scan 1.3s linear infinite;
+
+}
+
+@keyframes scan{
+
+0%{transform:translateX(-100%)}
+100%{transform:translateX(100%)}
+
+}
+
+/* sections */
+
+section{
+
+padding:90px 10%;
+
+}
+
+/* stack */
+
+.stack-grid{
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:30px;
+
+}
+
+.stack-box{
+
+background:rgba(255,255,255,.02);
+
+border:1px solid rgba(255,255,255,.08);
+
+padding:30px;
+
+backdrop-filter:blur(5px);
+
+transition:.35s;
+
+}
+
+.stack-box:hover{
+
+transform:translateY(-6px) scale(1.02);
+
+border-color:#00ffe1;
+
+box-shadow:
+0 0 20px rgba(0,255,200,.25),
+0 0 40px rgba(0,255,200,.08);
+
+}
+
+/* projects */
+
+.projects{
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:30px;
+
+}
+
+.project-card{
+
+background:rgba(255,255,255,.02);
+
+border:1px solid rgba(255,255,255,.08);
+
+padding:30px;
+
+position:relative;
+
+transition:.35s;
+
+backdrop-filter:blur(5px);
+
+}
+
+.project-card::before{
+
+content:"OPERATION";
+
+position:absolute;
+
+top:-10px;
+left:20px;
+
+font-size:10px;
+
+background:#050505;
+
+padding:4px 7px;
+
+color:#00ffe1;
+
+}
+
+.project-card:hover{
+
+transform:translateY(-6px);
+
+border-color:#00ffe1;
+
+box-shadow:
+0 0 20px rgba(0,255,200,.25),
+0 0 50px rgba(0,255,200,.08);
+
+}
+
+/* terminal */
+
+.terminal{
+
+background:#020202;
+
+border:1px solid rgba(255,255,255,.1);
+
+padding:35px;
+
+font-size:14px;
+
+line-height:1.6;
+
+box-shadow:
+0 0 30px rgba(0,0,0,.8),
+inset 0 0 40px rgba(0,255,200,.03);
+
+}
+
+.cursor{
+
+animation:blink 1s infinite;
+
+}
+
+@keyframes blink{
+
+0%{opacity:1}
+50%{opacity:0}
+100%{opacity:1}
+
+}
+
+/* footer */
+
+footer{
+
+text-align:center;
+padding:30px;
+
+border-top:1px solid rgba(255,255,255,.1);
+
+margin-top:60px;
+
+font-size:14px;
+
+}
+
+/* planet */
+
+#planet-container{
+
+position:fixed;
+
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+background:black;
+
+display:none;
+
+z-index:9000;
+
+}
+
+#closePlanet{
+
+position:absolute;
+
+top:20px;
+right:20px;
+
+padding:10px 18px;
+
+border:1px solid #00ffe1;
+
+background:none;
+
+color:#00ffe1;
+
+cursor:pointer;
+
+font-family:"Orbitron";
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="hero">
+
+<h1 class="glitch" data-text="JUNIOR.xd // RED TEAM OPERATOR">
+JUNIOR.xd // RED TEAM OPERATOR
+</h1>
+
+<p>
+Offensive Security enthusiast focused on vulnerability discovery and exploitation.
+</p>
+
+<div class="buttons">
+
+<a href="#projects">Projects</a>
+<a href="#" id="planetBtn">Planet</a>
+<a href="#contact">Contact</a>
+
+</div>
+
+</header>
+
+<section>
+
+<h2>TECH STACK</h2>
+
+<div class="stack-grid">
+
+<div class="stack-box">
+<h3>Network</h3>
+<ul>
+<li>Nmap</li>
+<li>Wireshark</li>
+<li>Masscan</li>
+<li>Netcat</li>
+</ul>
+</div>
+
+<div class="stack-box">
+<h3>Web Security</h3>
+<ul>
+<li>Burp Suite</li>
+<li>SQLmap</li>
+<li>Gobuster</li>
+<li>OWASP ZAP</li>
+</ul>
+</div>
+
+<div class="stack-box">
+<h3>Recon</h3>
+<ul>
+<li>Amass</li>
+<li>Subfinder</li>
+<li>theHarvester</li>
+<li>Recon-ng</li>
+</ul>
+</div>
+
+<div class="stack-box">
+<h3>Scripting</h3>
+<ul>
+<li>Python</li>
+<li>Bash</li>
+<li>Linux</li>
+<li>Git</li>
+</ul>
+</div>
+
+</div>
+
+</section>
+
+<section id="projects">
+
+<h2>PROJECT OPERATIONS</h2>
+
+<div class="projects">
+
+<div class="project-card">
+<h3>HTB - Lame</h3>
+<p>SMB Enumeration / Exploitation</p>
+</div>
+
+<div class="project-card">
+<h3>Network Scanner</h3>
+<p>Python host discovery + port scanner</p>
+</div>
+
+<div class="project-card">
+<h3>Ping Sweep Tool</h3>
+<p>Local network active host discovery</p>
+</div>
+
+</div>
+
+</section>
+
+<section id="contact">
+
+<h2>CONTACT TERMINAL</h2>
+
+<div class="terminal">
+
+<div id="terminal"></div>
+<span class="cursor">█</span>
+
+</div>
+
+</section>
+
+<footer>
+
+Cybersecurity Portfolio © 2026
+
+</footer>
+
+<div id="planet-container">
+<button id="closePlanet">Back</button>
+</div>
+
+<script>
+
+/* terminal typing */
+
+const text=`user@redteam:~$ connect junior
+
+Email: playeasy1234zs@gmail.com
+GitHub: github.com/Adeiltonkali
+
+user@redteam:~$`;
+
+let i=0;
+
+function type(){
+
+if(i<text.length){
+
+document.getElementById("terminal").innerHTML+=text.charAt(i);
+
+i++;
+
+setTimeout(type,30);
+
+}
+
+}
+
+type();
+
+/* background particles */
+
+for(let i=0;i<120;i++){
+
+let dot=document.createElement("div");
+
+dot.style.position="fixed";
+
+dot.style.width="2px";
+dot.style.height="2px";
+
+dot.style.background="white";
+
+dot.style.opacity=Math.random();
+
+dot.style.left=Math.random()*100+"%";
+dot.style.top=Math.random()*100+"%";
+
+document.body.appendChild(dot);
+
+}
+
+/* planet */
+
+const planetBtn=document.getElementById("planetBtn");
+const container=document.getElementById("planet-container");
+const closePlanet=document.getElementById("closePlanet");
+
+planetBtn.onclick=(e)=>{
+
+e.preventDefault();
+
+container.style.display="block";
+
+initPlanet();
+
+};
+
+closePlanet.onclick=()=>{
+
+container.style.display="none";
+
+location.reload();
+
+};
+
+function initPlanet(){
+
+const scene=new THREE.Scene();
+
+const camera=new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+);
+
+const renderer=new THREE.WebGLRenderer({antialias:true});
+
+renderer.setSize(window.innerWidth,window.innerHeight);
+
+container.appendChild(renderer.domElement);
+
+const geometry=new THREE.SphereGeometry(3,64,64);
+
+const material=new THREE.MeshStandardMaterial({color:0x00ffe1});
+
+const planet=new THREE.Mesh(geometry,material);
+
+scene.add(planet);
+
+const light=new THREE.PointLight(0xffffff,1);
+
+light.position.set(5,5,5);
+
+scene.add(light);
+
+camera.position.z=7;
+
+function animate(){
+
+requestAnimationFrame(animate);
+
+planet.rotation.y+=0.003;
+
+renderer.render(scene,camera);
+
+}
+
+animate();
+
+}
+
+</script>
+
+</body>
+
+</html>
